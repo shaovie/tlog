@@ -1,25 +1,25 @@
 package tlog
 
 import (
-    "math"
-	"time"
+	"math"
 	"strconv"
-    "unicode/utf8"
+	"time"
+	"unicode/utf8"
 )
 
 const (
-	HumanReadableTime   int = 1  // 2023-07-14 21:08:20
-	HumanReadableTimeMs int = 2  // 2023-07-14 21:08:20.212
-	UnixTimestamp       int = 3  // 1689340100
-	UnixTimestampMs     int = 4  // 1689340100123 // millisecond
+	HumanReadableTime   int = 1 // 2023-07-14 21:08:20
+	HumanReadableTimeMs int = 2 // 2023-07-14 21:08:20.212
+	UnixTimestamp       int = 3 // 1689340100
+	UnixTimestampMs     int = 4 // 1689340100123 // millisecond
 )
 
 type Encoder interface {
-    // For writer
-    Level() int
-    Now() time.Time
+	// For writer
+	Level() int
+	Now() time.Time
 
-    //= 
+	//=
 	Fmt(k, format string, v ...any) Encoder
 
 	Str(k, v string) Encoder
@@ -56,28 +56,28 @@ type Encoder interface {
 	Float64(k string, v float64) Encoder
 	Floats64(k string, v []float64) Encoder
 
-    Type(k string, v any) Encoder
+	Type(k string, v any) Encoder
 
-    Time(k string, t time.Time, format string) Encoder
+	Time(k string, t time.Time, format string) Encoder
 
-    // RawJSON adds already encoded JSON to the log line under key.
-    //
-    // No sanity check is performed on b; it must not contain carriage returns and
-    // be valid JSON
-    RawJSON(k string, b []byte) Encoder
+	// RawJSON adds already encoded JSON to the log line under key.
+	//
+	// No sanity check is performed on b; it must not contain carriage returns and
+	// be valid JSON
+	RawJSON(k string, b []byte) Encoder
 
-    // config
-    OmitEmpty(v bool) Encoder
+	// config
+	OmitEmpty(v bool) Encoder
 
-    // end
-    Msg(s string)
-    Msgf(format string, v ...any)
+	// end
+	Msg(s string)
+	Msgf(format string, v ...any)
 	Go()
 }
 
 type encoder struct {
-    level int
-	buf []byte
+	level int
+	buf   []byte
 
 	now    time.Time
 	writer Writer
@@ -106,10 +106,10 @@ func init() {
 }
 
 func (e *encoder) Level() int {
-    return e.level
+	return e.level
 }
 func (e *encoder) Now() time.Time {
-    return e.now
+	return e.now
 }
 func (e *encoder) appendTwoDigitsString(i int) {
 	e.buf = append(e.buf, twoDigits[i*2:i*2+2]...)
@@ -154,19 +154,20 @@ func (e *encoder) fastAppendString(s string) {
 	e.buf = append(e.buf, s...)
 }
 func (e *encoder) appendString(s string) {
-    for i := 0; i < len(s); i++ {
-        // Check if the character needs encoding. Control characters, slashes,
+	for i := 0; i < len(s); i++ {
+		// Check if the character needs encoding. Control characters, slashes,
 		// and the double quote need json encoding. Bytes above the ascii
 		// boundary needs utf8 encoding.
 		if !noEscapeTable[s[i]] {
 			// We encountered a character that needs to be encoded. Switch
 			// to complex version of the algorithm.
 			e.appendStringComplex(s, i)
-            return
+			return
 		}
-    }
+	}
 	e.buf = append(e.buf, s...)
 }
+
 // appendStringComplex is used by appendString to take over an in
 // progress JSON string encoding that encountered a character that needs
 // to be encoded.
@@ -231,7 +232,7 @@ func (e *encoder) appendInts(vals []int) {
 	e.buf = strconv.AppendInt(e.buf, int64(vals[0]), 10)
 	if len(vals) > 1 {
 		for _, val := range vals[1:] {
-            e.buf = append(e.buf, ',')
+			e.buf = append(e.buf, ',')
 			e.buf = strconv.AppendInt(e.buf, int64(val), 10)
 		}
 	}
@@ -240,7 +241,7 @@ func (e *encoder) appendInts8(vals []int8) {
 	e.buf = strconv.AppendInt(e.buf, int64(vals[0]), 10)
 	if len(vals) > 1 {
 		for _, val := range vals[1:] {
-            e.buf = append(e.buf, ',')
+			e.buf = append(e.buf, ',')
 			e.buf = strconv.AppendInt(e.buf, int64(val), 10)
 		}
 	}
@@ -249,7 +250,7 @@ func (e *encoder) appendInts16(vals []int16) {
 	e.buf = strconv.AppendInt(e.buf, int64(vals[0]), 10)
 	if len(vals) > 1 {
 		for _, val := range vals[1:] {
-            e.buf = append(e.buf, ',')
+			e.buf = append(e.buf, ',')
 			e.buf = strconv.AppendInt(e.buf, int64(val), 10)
 		}
 	}
@@ -258,7 +259,7 @@ func (e *encoder) appendInts32(vals []int32) {
 	e.buf = strconv.AppendInt(e.buf, int64(vals[0]), 10)
 	if len(vals) > 1 {
 		for _, val := range vals[1:] {
-            e.buf = append(e.buf, ',')
+			e.buf = append(e.buf, ',')
 			e.buf = strconv.AppendInt(e.buf, int64(val), 10)
 		}
 	}
@@ -267,7 +268,7 @@ func (e *encoder) appendInts64(vals []int64) {
 	e.buf = strconv.AppendInt(e.buf, vals[0], 10)
 	if len(vals) > 1 {
 		for _, val := range vals[1:] {
-            e.buf = append(e.buf, ',')
+			e.buf = append(e.buf, ',')
 			e.buf = strconv.AppendInt(e.buf, val, 10)
 		}
 	}
@@ -276,7 +277,7 @@ func (e *encoder) appendUints(vals []uint) {
 	e.buf = strconv.AppendUint(e.buf, uint64(vals[0]), 10)
 	if len(vals) > 1 {
 		for _, val := range vals[1:] {
-            e.buf = append(e.buf, ',')
+			e.buf = append(e.buf, ',')
 			e.buf = strconv.AppendUint(e.buf, uint64(val), 10)
 		}
 	}
@@ -285,7 +286,7 @@ func (e *encoder) appendUints8(vals []uint8) {
 	e.buf = strconv.AppendUint(e.buf, uint64(vals[0]), 10)
 	if len(vals) > 1 {
 		for _, val := range vals[1:] {
-            e.buf = append(e.buf, ',')
+			e.buf = append(e.buf, ',')
 			e.buf = strconv.AppendUint(e.buf, uint64(val), 10)
 		}
 	}
@@ -294,7 +295,7 @@ func (e *encoder) appendUints16(vals []uint16) {
 	e.buf = strconv.AppendUint(e.buf, uint64(vals[0]), 10)
 	if len(vals) > 1 {
 		for _, val := range vals[1:] {
-            e.buf = append(e.buf, ',')
+			e.buf = append(e.buf, ',')
 			e.buf = strconv.AppendUint(e.buf, uint64(val), 10)
 		}
 	}
@@ -303,7 +304,7 @@ func (e *encoder) appendUints32(vals []uint32) {
 	e.buf = strconv.AppendUint(e.buf, uint64(vals[0]), 10)
 	if len(vals) > 1 {
 		for _, val := range vals[1:] {
-            e.buf = append(e.buf, ',')
+			e.buf = append(e.buf, ',')
 			e.buf = strconv.AppendUint(e.buf, uint64(val), 10)
 		}
 	}
@@ -312,7 +313,7 @@ func (e *encoder) appendUints64(vals []uint64) {
 	e.buf = strconv.AppendUint(e.buf, vals[0], 10)
 	if len(vals) > 1 {
 		for _, val := range vals[1:] {
-            e.buf = append(e.buf, ',')
+			e.buf = append(e.buf, ',')
 			e.buf = strconv.AppendUint(e.buf, val, 10)
 		}
 	}
@@ -321,7 +322,7 @@ func (e *encoder) appendFloats32(vals []float32) {
 	e.appendFloat(float64(vals[0]), 32)
 	if len(vals) > 1 {
 		for _, val := range vals[1:] {
-            e.buf = append(e.buf, ',')
+			e.buf = append(e.buf, ',')
 			e.appendFloat(float64(val), 32)
 		}
 	}
@@ -330,25 +331,25 @@ func (e *encoder) appendFloats64(vals []float64) {
 	e.appendFloat(vals[0], 64)
 	if len(vals) > 1 {
 		for _, val := range vals[1:] {
-            e.buf = append(e.buf, ',')
+			e.buf = append(e.buf, ',')
 			e.appendFloat(val, 64)
 		}
-    }
+	}
 }
 func (e *encoder) appendFloat(v float64, bitSize int) {
-    if math.IsNaN(v) {
+	if math.IsNaN(v) {
 		e.buf = append(e.buf, `"NaN"`...)
-    } else if math.IsInf(v, 1) {
+	} else if math.IsInf(v, 1) {
 		e.buf = append(e.buf, `"+Inf"`...)
-    } else if math.IsInf(v, -1) {
+	} else if math.IsInf(v, -1) {
 		e.buf = append(e.buf, `"-Inf"`...)
 	} else {
-        e.buf = strconv.AppendFloat(e.buf, v, 'f', -1, bitSize)
-    }
+		e.buf = strconv.AppendFloat(e.buf, v, 'f', -1, bitSize)
+	}
 }
 func (e *encoder) appendTime(t time.Time, format string) {
-    e.buf = t.AppendFormat(e.buf, format)
+	e.buf = t.AppendFormat(e.buf, format)
 }
 func (e *encoder) appendRawJSON(k string, b []byte) {
-    e.buf = append(e.buf, b...)
+	e.buf = append(e.buf, b...)
 }

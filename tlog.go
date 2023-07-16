@@ -1,7 +1,7 @@
 package tlog
 
 import (
-    "os"
+	"os"
 	"sync"
 )
 
@@ -12,14 +12,14 @@ const (
 	ErrorLevel int = 1 << 3
 	FatalLevel int = 1 << 4
 	PanicLevel int = 1 << 5
-	AllLevel   int = (DebugLevel|InfoLevel|WarnLevel|ErrorLevel|FatalLevel|PanicLevel)
+	AllLevel   int = (DebugLevel | InfoLevel | WarnLevel | ErrorLevel | FatalLevel | PanicLevel)
 
 	FormatJson int = 1
 	FormatText int = 2
 )
 
 type TLog struct {
-    omitEmpty  bool // for json
+	omitEmpty  bool // for json
 	format     int
 	level      int
 	timeFormat int
@@ -33,7 +33,7 @@ func New(opts ...Option) *TLog {
 	opt := setOptions(opts...)
 
 	tl := &TLog{
-		omitEmpty:     opt.omitEmpty,
+		omitEmpty:  opt.omitEmpty,
 		format:     opt.format,
 		level:      opt.level,
 		writer:     opt.writer,
@@ -62,7 +62,7 @@ func New(opts ...Option) *TLog {
 }
 
 func (tl *TLog) newEncoder(lvl int, doneCallback func(s string)) Encoder {
-	if tl.level & lvl == 0 {
+	if tl.level&lvl == 0 {
 		if doneCallback != nil {
 			doneCallback("(level diabled)")
 		}
@@ -71,23 +71,23 @@ func (tl *TLog) newEncoder(lvl int, doneCallback func(s string)) Encoder {
 	var e Encoder
 	if tl.format == FormatJson {
 		obj := tl.encoderJsonPool.Get().(*encoderJson)
-        obj.level = lvl
-        obj.omitEmpty = tl.omitEmpty
-        obj.timeFormat = tl.timeFormat
+		obj.level = lvl
+		obj.omitEmpty = tl.omitEmpty
+		obj.timeFormat = tl.timeFormat
 		obj.writer = tl.writer
 		obj.doneCallback = doneCallback
 		obj.init()
 		e = obj
 	} else if tl.format == FormatText {
 		obj := tl.encoderTextPool.Get().(*encoderText)
-        obj.level = lvl
-        obj.omitEmpty = tl.omitEmpty
-        obj.timeFormat = tl.timeFormat
+		obj.level = lvl
+		obj.omitEmpty = tl.omitEmpty
+		obj.timeFormat = tl.timeFormat
 		obj.writer = tl.writer
 		obj.doneCallback = doneCallback
 		obj.init()
 		e = obj
-    }
+	}
 	return e
 }
 func (tl *TLog) Debug() Encoder {

@@ -1,18 +1,18 @@
 package tlog
 
 import (
-    "time"
-    "reflect"
+	"encoding/json"
+	"reflect"
 	"testing"
-    "encoding/json"
+	"time"
 )
 
 func TestTLog(t *testing.T) {
-    writer := NewWriteToConsole()
-    //writer := NewWriteToFileSeparate(FileStoreMode(AppendOneFile))
-    //writer := NewWriteToFileMixed(FileStoreMode(AppendOneFile))
+	writer := NewWriteToConsole()
+	//writer := NewWriteToFileSeparate(FileStoreMode(AppendOneFile))
+	//writer := NewWriteToFileMixed(FileStoreMode(AppendOneFile))
 	tl := New(OmitEmpty(true), SetWriter(writer), Format(FormatText))
-    s1 := `i'm sorry, "cuisw" is right! ohh.\n`
+	s1 := `i'm sorry, "cuisw" is right! ohh.\n`
 	tl.Debug().Fmt("fmt", "n=%d type=%s v=%v %s", 10, reflect.TypeOf(*tl).String(), *tl, s1).Msg("")
 	tl.Debug().Fmt("> ", "n=%d type=%s v=%v %s", 10, reflect.TypeOf(*tl).String(), *tl, s1).Msg("")
 
@@ -53,17 +53,17 @@ func TestTLog(t *testing.T) {
 
 	tl.Debug().OmitEmpty(false).Ints("nilints", nil).Ints("emptyints", []int{}).Msg("")
 
-    t1 := 1
+	t1 := 1
 	tl.Debug().Type("type", t1).Go()
 
 	tl.Debug().Time("time", time.Now(), time.RFC1123Z).Msg("")
 
-    type js struct {
-        Name string `json:"name"`
-        Empty string `json:"empty,omitempty"`
-        Age int `json:"age"`
-        Address []byte `json:"addr,omitempty"`
-    }
-    jsdata, _ := json.Marshal(&js{Name: "cuisw", Empty: "", Age: 18})
-    tl.Debug().RawJSON("json", jsdata).Msgf("it's %s end #%d", "oooh", 12)
+	type js struct {
+		Name    string `json:"name"`
+		Empty   string `json:"empty,omitempty"`
+		Age     int    `json:"age"`
+		Address []byte `json:"addr,omitempty"`
+	}
+	jsdata, _ := json.Marshal(&js{Name: "cuisw", Empty: "", Age: 18})
+	tl.Debug().RawJSON("json", jsdata).Msgf("it's %s end #%d", "oooh", 12)
 }

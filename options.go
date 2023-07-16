@@ -1,11 +1,10 @@
 package tlog
 
-import (
-)
+import ()
 
 type Options struct {
-    // for json/text
-    omitEmpty bool
+	// for json/text
+	omitEmpty bool
 
 	format int
 
@@ -15,27 +14,27 @@ type Options struct {
 
 	writer Writer
 
-    // for output file
-    logDir string
-    logFilePrefix string
-    fileStoreMode FileStoreModeT
+	// for output file
+	logDir        string
+	logFilePrefix string
+	fileStoreMode FileStoreModeT
 
-    // for simple post
-    postUrl string
+	// for simple post
+	postUrl string
 }
 
 type Option func(*Options)
 
 func setOptions(optL ...Option) *Options {
 	opts := &Options{
-        omitEmpty:  true,
-		format:     FormatJson,
-		level:      AllLevel,
-		writer:     NewWriteToConsole(),
-		timeFormat: HumanReadableTimeMs,
-        logDir: "logs",
-        logFilePrefix: "tlog",
-        fileStoreMode: DailySplit,
+		omitEmpty:     true,
+		format:        FormatJson,
+		level:         AllLevel,
+		writer:        NewWriteToConsole(),
+		timeFormat:    HumanReadableTimeMs,
+		logDir:        "logs",
+		logFilePrefix: "tlog",
+		fileStoreMode: DailySplit,
 	}
 
 	for _, opt := range optL {
@@ -52,6 +51,7 @@ func SetWriter(w Writer) Option {
 		}
 	}
 }
+
 // Set prefix `time` format
 func TimeFormat(v int) Option {
 	return func(o *Options) {
@@ -60,6 +60,7 @@ func TimeFormat(v int) Option {
 		}
 	}
 }
+
 // json/text
 func Format(v int) Option {
 	return func(o *Options) {
@@ -68,41 +69,42 @@ func Format(v int) Option {
 		}
 	}
 }
+
 // for json:string,array
 func OmitEmpty(v bool) Option {
 	return func(o *Options) {
-        o.omitEmpty = v
+		o.omitEmpty = v
 	}
 }
 
 // for output file
 func LogDir(v string) Option {
 	return func(o *Options) {
-        if len(v) > 0 {
-            o.logDir = v
-        }
+		if len(v) > 0 {
+			o.logDir = v
+		}
 	}
 }
 func LogFilePrefix(v string) Option {
 	return func(o *Options) {
-        if len(v) > 0 {
-            o.logFilePrefix = v
-        }
+		if len(v) > 0 {
+			o.logFilePrefix = v
+		}
 	}
 }
 func FileStoreMode(v FileStoreModeT) Option {
 	return func(o *Options) {
-        if v > 0 {
-            o.fileStoreMode = v
-        }
+		if v > 0 {
+			o.fileStoreMode = v
+		}
 	}
 }
 
 // for simple post
 func PostUrl(v string) Option {
 	return func(o *Options) {
-        if len(v) > 0 {
-            o.postUrl = v
-        }
+		if len(v) > 0 {
+			o.postUrl = v
+		}
 	}
 }
