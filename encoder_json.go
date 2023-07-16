@@ -66,10 +66,6 @@ func (e *encoderJson) appendHeaderTime() {
 		e.appendHumanReadableTimeMs()
 		e.buf = append(e.buf, '"')
 	} else if e.timeFormat == UnixTimestamp {
-		e.buf = append(e.buf, '"')
-		e.buf = strconv.AppendInt(e.buf, e.now.Unix(), 10)
-		e.buf = append(e.buf, '"')
-	} else if e.timeFormat == UnixTimestamp {
 		e.buf = strconv.AppendInt(e.buf, e.now.Unix(), 10)
 	} else if e.timeFormat == UnixTimestampMs {
 		e.buf = strconv.AppendInt(e.buf, e.now.UnixMilli(), 10)
@@ -126,26 +122,7 @@ func (e *encoderJson) Strs(k string, vals []string) Encoder {
 		return e
 	}
 	e.appendKey(k)
-	if vals == nil {
-		e.buf = append(e.buf, 'n', 'u', 'l', 'l')
-		return e
-	}
-	if len(vals) == 0 {
-		e.buf = append(e.buf, '[', ']')
-		return e
-	}
-	e.buf = append(e.buf, '[')
-	e.buf = append(e.buf, '"')
-	e.appendString(vals[0])
-	e.buf = append(e.buf, '"')
-	if len(vals) > 1 {
-		for _, val := range vals[1:] {
-			e.buf = append(e.buf, ',', '"')
-			e.appendString(val)
-			e.buf = append(e.buf, '"')
-		}
-	}
-	e.buf = append(e.buf, ']')
+	e.appendStrings(vals)
 	return e
 }
 func (e *encoderJson) Bool(k string, v bool) Encoder {
@@ -164,23 +141,7 @@ func (e *encoderJson) Bools(k string, vals []bool) Encoder {
 		return e
 	}
 	e.appendKey(k)
-	if vals == nil {
-		e.buf = append(e.buf, 'n', 'u', 'l', 'l')
-		return e
-	}
-	if len(vals) == 0 {
-		e.buf = append(e.buf, '[', ']')
-		return e
-	}
-	e.buf = append(e.buf, '[')
-	e.buf = strconv.AppendBool(e.buf, vals[0])
-	if len(vals) > 1 {
-		for _, val := range vals[1:] {
-			e.buf = append(e.buf, ',')
-			e.buf = strconv.AppendBool(e.buf, val)
-		}
-	}
-	e.buf = append(e.buf, ']')
+	e.appendBools(vals)
 	return e
 }
 func (e *encoderJson) Int(k string, v int) Encoder {
@@ -199,17 +160,7 @@ func (e *encoderJson) Ints(k string, vals []int) Encoder {
 		return e
 	}
 	e.appendKey(k)
-	if vals == nil {
-		e.buf = append(e.buf, 'n', 'u', 'l', 'l')
-		return e
-	}
-	if len(vals) == 0 {
-		e.buf = append(e.buf, '[', ']')
-		return e
-	}
-	e.buf = append(e.buf, '[')
 	e.appendInts(vals)
-	e.buf = append(e.buf, ']')
 	return e
 }
 func (e *encoderJson) Int8(k string, v int8) Encoder {
@@ -228,17 +179,7 @@ func (e *encoderJson) Ints8(k string, vals []int8) Encoder {
 		return e
 	}
 	e.appendKey(k)
-	if vals == nil {
-		e.buf = append(e.buf, 'n', 'u', 'l', 'l')
-		return e
-	}
-	if len(vals) == 0 {
-		e.buf = append(e.buf, '[', ']')
-		return e
-	}
-	e.buf = append(e.buf, '[')
 	e.appendInts8(vals)
-	e.buf = append(e.buf, ']')
 	return e
 }
 func (e *encoderJson) Int16(k string, v int16) Encoder {
@@ -257,17 +198,7 @@ func (e *encoderJson) Ints16(k string, vals []int16) Encoder {
 		return e
 	}
 	e.appendKey(k)
-	if vals == nil {
-		e.buf = append(e.buf, 'n', 'u', 'l', 'l')
-		return e
-	}
-	if len(vals) == 0 {
-		e.buf = append(e.buf, '[', ']')
-		return e
-	}
-	e.buf = append(e.buf, '[')
 	e.appendInts16(vals)
-	e.buf = append(e.buf, ']')
 	return e
 }
 func (e *encoderJson) Int32(k string, v int32) Encoder {
@@ -286,17 +217,7 @@ func (e *encoderJson) Ints32(k string, vals []int32) Encoder {
 		return e
 	}
 	e.appendKey(k)
-	if vals == nil {
-		e.buf = append(e.buf, 'n', 'u', 'l', 'l')
-		return e
-	}
-	if len(vals) == 0 {
-		e.buf = append(e.buf, '[', ']')
-		return e
-	}
-	e.buf = append(e.buf, '[')
 	e.appendInts32(vals)
-	e.buf = append(e.buf, ']')
 	return e
 }
 func (e *encoderJson) Int64(k string, v int64) Encoder {
@@ -312,17 +233,7 @@ func (e *encoderJson) Ints64(k string, vals []int64) Encoder {
 		return nil
 	}
 	e.appendKey(k)
-	if vals == nil {
-		e.buf = append(e.buf, 'n', 'u', 'l', 'l')
-		return e
-	}
-	if len(vals) == 0 {
-		e.buf = append(e.buf, '[', ']')
-		return e
-	}
-	e.buf = append(e.buf, '[')
 	e.appendInts64(vals)
-	e.buf = append(e.buf, ']')
 	return e
 }
 func (e *encoderJson) Uint(k string, v uint) Encoder {
@@ -341,17 +252,7 @@ func (e *encoderJson) Uints(k string, vals []uint) Encoder {
 		return e
 	}
 	e.appendKey(k)
-	if vals == nil {
-		e.buf = append(e.buf, 'n', 'u', 'l', 'l')
-		return e
-	}
-	if len(vals) == 0 {
-		e.buf = append(e.buf, '[', ']')
-		return e
-	}
-	e.buf = append(e.buf, '[')
 	e.appendUints(vals)
-	e.buf = append(e.buf, ']')
 	return e
 }
 func (e *encoderJson) Uint8(k string, v uint8) Encoder {
@@ -370,17 +271,7 @@ func (e *encoderJson) Uints8(k string, vals []uint8) Encoder {
 		return e
 	}
 	e.appendKey(k)
-	if vals == nil {
-		e.buf = append(e.buf, 'n', 'u', 'l', 'l')
-		return e
-	}
-	if len(vals) == 0 {
-		e.buf = append(e.buf, '[', ']')
-		return e
-	}
-	e.buf = append(e.buf, '[')
 	e.appendUints8(vals)
-	e.buf = append(e.buf, ']')
 	return e
 }
 func (e *encoderJson) Uint16(k string, v uint16) Encoder {
@@ -399,17 +290,7 @@ func (e *encoderJson) Uints16(k string, vals []uint16) Encoder {
 		return e
 	}
 	e.appendKey(k)
-	if vals == nil {
-		e.buf = append(e.buf, 'n', 'u', 'l', 'l')
-		return e
-	}
-	if len(vals) == 0 {
-		e.buf = append(e.buf, '[', ']')
-		return e
-	}
-	e.buf = append(e.buf, '[')
 	e.appendUints16(vals)
-	e.buf = append(e.buf, ']')
 	return e
 }
 func (e *encoderJson) Uint32(k string, v uint32) Encoder {
@@ -428,17 +309,7 @@ func (e *encoderJson) Uints32(k string, vals []uint32) Encoder {
 		return e
 	}
 	e.appendKey(k)
-	if vals == nil {
-		e.buf = append(e.buf, 'n', 'u', 'l', 'l')
-		return e
-	}
-	if len(vals) == 0 {
-		e.buf = append(e.buf, '[', ']')
-		return e
-	}
-	e.buf = append(e.buf, '[')
 	e.appendUints32(vals)
-	e.buf = append(e.buf, ']')
 	return e
 }
 func (e *encoderJson) Uint64(k string, v uint64) Encoder {
@@ -457,17 +328,7 @@ func (e *encoderJson) Uints64(k string, vals []uint64) Encoder {
 		return e
 	}
 	e.appendKey(k)
-	if vals == nil {
-		e.buf = append(e.buf, 'n', 'u', 'l', 'l')
-		return e
-	}
-	if len(vals) == 0 {
-		e.buf = append(e.buf, '[', ']')
-		return e
-	}
-	e.buf = append(e.buf, '[')
 	e.appendUints64(vals)
-	e.buf = append(e.buf, ']')
 	return e
 }
 func (e *encoderJson) Float32(k string, v float32) Encoder {
@@ -486,17 +347,7 @@ func (e *encoderJson) Floats32(k string, vals []float32) Encoder {
 		return e
 	}
 	e.appendKey(k)
-	if vals == nil {
-		e.buf = append(e.buf, 'n', 'u', 'l', 'l')
-		return e
-	}
-	if len(vals) == 0 {
-		e.buf = append(e.buf, '[', ']')
-		return e
-	}
-	e.buf = append(e.buf, '[')
 	e.appendFloats32(vals)
-	e.buf = append(e.buf, ']')
 	return e
 }
 func (e *encoderJson) Float64(k string, v float64) Encoder {
@@ -515,17 +366,7 @@ func (e *encoderJson) Floats64(k string, vals []float64) Encoder {
 		return e
 	}
 	e.appendKey(k)
-	if vals == nil {
-		e.buf = append(e.buf, 'n', 'u', 'l', 'l')
-		return e
-	}
-	if len(vals) == 0 {
-		e.buf = append(e.buf, '[', ']')
-		return e
-	}
-	e.buf = append(e.buf, '[')
 	e.appendFloats64(vals)
-	e.buf = append(e.buf, ']')
 	return e
 }
 func (e *encoderJson) Type(k string, v any) Encoder {

@@ -106,26 +106,7 @@ func (e *encoderText) Strs(k string, vals []string) Encoder {
 		return e
 	}
 	e.appendKey(k)
-	if vals == nil {
-		e.buf = append(e.buf, 'n', 'u', 'l', 'l')
-		return e
-	}
-	if len(vals) == 0 {
-		e.buf = append(e.buf, '[', ']')
-		return e
-	}
-	e.buf = append(e.buf, '[')
-	e.buf = append(e.buf, '"')
-	e.appendString(vals[0])
-	e.buf = append(e.buf, '"')
-	if len(vals) > 1 {
-		for _, val := range vals[1:] {
-			e.buf = append(e.buf, ',', '"')
-			e.appendString(val)
-			e.buf = append(e.buf, '"')
-		}
-	}
-	e.buf = append(e.buf, ']')
+	e.appendStrings(vals)
 	return e
 }
 func (e *encoderText) Bool(k string, v bool) Encoder {
@@ -144,23 +125,7 @@ func (e *encoderText) Bools(k string, vals []bool) Encoder {
 		return e
 	}
 	e.appendKey(k)
-	if vals == nil {
-		e.buf = append(e.buf, 'n', 'u', 'l', 'l')
-		return e
-	}
-	if len(vals) == 0 {
-		e.buf = append(e.buf, '[', ']')
-		return e
-	}
-	e.buf = append(e.buf, '[')
-	e.buf = strconv.AppendBool(e.buf, vals[0])
-	if len(vals) > 1 {
-		for _, val := range vals[1:] {
-			e.buf = append(e.buf, ',')
-			e.buf = strconv.AppendBool(e.buf, val)
-		}
-	}
-	e.buf = append(e.buf, ']')
+	e.appendBools(vals)
 	return e
 }
 func (e *encoderText) Int(k string, v int) Encoder {
@@ -179,17 +144,7 @@ func (e *encoderText) Ints(k string, vals []int) Encoder {
 		return e
 	}
 	e.appendKey(k)
-	if vals == nil {
-		e.buf = append(e.buf, 'n', 'u', 'l', 'l')
-		return e
-	}
-	if len(vals) == 0 {
-		e.buf = append(e.buf, '[', ']')
-		return e
-	}
-	e.buf = append(e.buf, '[')
 	e.appendInts(vals)
-	e.buf = append(e.buf, ']')
 	return e
 }
 func (e *encoderText) Int8(k string, v int8) Encoder {
@@ -208,17 +163,7 @@ func (e *encoderText) Ints8(k string, vals []int8) Encoder {
 		return e
 	}
 	e.appendKey(k)
-	if vals == nil {
-		e.buf = append(e.buf, 'n', 'u', 'l', 'l')
-		return e
-	}
-	if len(vals) == 0 {
-		e.buf = append(e.buf, '[', ']')
-		return e
-	}
-	e.buf = append(e.buf, '[')
 	e.appendInts8(vals)
-	e.buf = append(e.buf, ']')
 	return e
 }
 func (e *encoderText) Int16(k string, v int16) Encoder {
@@ -237,17 +182,7 @@ func (e *encoderText) Ints16(k string, vals []int16) Encoder {
 		return e
 	}
 	e.appendKey(k)
-	if vals == nil {
-		e.buf = append(e.buf, 'n', 'u', 'l', 'l')
-		return e
-	}
-	if len(vals) == 0 {
-		e.buf = append(e.buf, '[', ']')
-		return e
-	}
-	e.buf = append(e.buf, '[')
 	e.appendInts16(vals)
-	e.buf = append(e.buf, ']')
 	return e
 }
 func (e *encoderText) Int32(k string, v int32) Encoder {
@@ -266,17 +201,7 @@ func (e *encoderText) Ints32(k string, vals []int32) Encoder {
 		return e
 	}
 	e.appendKey(k)
-	if vals == nil {
-		e.buf = append(e.buf, 'n', 'u', 'l', 'l')
-		return e
-	}
-	if len(vals) == 0 {
-		e.buf = append(e.buf, '[', ']')
-		return e
-	}
-	e.buf = append(e.buf, '[')
 	e.appendInts32(vals)
-	e.buf = append(e.buf, ']')
 	return e
 }
 func (e *encoderText) Int64(k string, v int64) Encoder {
@@ -292,17 +217,7 @@ func (e *encoderText) Ints64(k string, vals []int64) Encoder {
 		return nil
 	}
 	e.appendKey(k)
-	if vals == nil {
-		e.buf = append(e.buf, 'n', 'u', 'l', 'l')
-		return e
-	}
-	if len(vals) == 0 {
-		e.buf = append(e.buf, '[', ']')
-		return e
-	}
-	e.buf = append(e.buf, '[')
 	e.appendInts64(vals)
-	e.buf = append(e.buf, ']')
 	return e
 }
 func (e *encoderText) Uint(k string, v uint) Encoder {
@@ -321,17 +236,7 @@ func (e *encoderText) Uints(k string, vals []uint) Encoder {
 		return e
 	}
 	e.appendKey(k)
-	if vals == nil {
-		e.buf = append(e.buf, 'n', 'u', 'l', 'l')
-		return e
-	}
-	if len(vals) == 0 {
-		e.buf = append(e.buf, '[', ']')
-		return e
-	}
-	e.buf = append(e.buf, '[')
 	e.appendUints(vals)
-	e.buf = append(e.buf, ']')
 	return e
 }
 func (e *encoderText) Uint8(k string, v uint8) Encoder {
@@ -350,17 +255,7 @@ func (e *encoderText) Uints8(k string, vals []uint8) Encoder {
 		return e
 	}
 	e.appendKey(k)
-	if vals == nil {
-		e.buf = append(e.buf, 'n', 'u', 'l', 'l')
-		return e
-	}
-	if len(vals) == 0 {
-		e.buf = append(e.buf, '[', ']')
-		return e
-	}
-	e.buf = append(e.buf, '[')
 	e.appendUints8(vals)
-	e.buf = append(e.buf, ']')
 	return e
 }
 func (e *encoderText) Uint16(k string, v uint16) Encoder {
@@ -379,17 +274,7 @@ func (e *encoderText) Uints16(k string, vals []uint16) Encoder {
 		return e
 	}
 	e.appendKey(k)
-	if vals == nil {
-		e.buf = append(e.buf, 'n', 'u', 'l', 'l')
-		return e
-	}
-	if len(vals) == 0 {
-		e.buf = append(e.buf, '[', ']')
-		return e
-	}
-	e.buf = append(e.buf, '[')
 	e.appendUints16(vals)
-	e.buf = append(e.buf, ']')
 	return e
 }
 func (e *encoderText) Uint32(k string, v uint32) Encoder {
@@ -408,17 +293,7 @@ func (e *encoderText) Uints32(k string, vals []uint32) Encoder {
 		return e
 	}
 	e.appendKey(k)
-	if vals == nil {
-		e.buf = append(e.buf, 'n', 'u', 'l', 'l')
-		return e
-	}
-	if len(vals) == 0 {
-		e.buf = append(e.buf, '[', ']')
-		return e
-	}
-	e.buf = append(e.buf, '[')
 	e.appendUints32(vals)
-	e.buf = append(e.buf, ']')
 	return e
 }
 func (e *encoderText) Uint64(k string, v uint64) Encoder {
@@ -437,17 +312,7 @@ func (e *encoderText) Uints64(k string, vals []uint64) Encoder {
 		return e
 	}
 	e.appendKey(k)
-	if vals == nil {
-		e.buf = append(e.buf, 'n', 'u', 'l', 'l')
-		return e
-	}
-	if len(vals) == 0 {
-		e.buf = append(e.buf, '[', ']')
-		return e
-	}
-	e.buf = append(e.buf, '[')
 	e.appendUints64(vals)
-	e.buf = append(e.buf, ']')
 	return e
 }
 func (e *encoderText) Float32(k string, v float32) Encoder {
@@ -466,17 +331,7 @@ func (e *encoderText) Floats32(k string, vals []float32) Encoder {
 		return e
 	}
 	e.appendKey(k)
-	if vals == nil {
-		e.buf = append(e.buf, 'n', 'u', 'l', 'l')
-		return e
-	}
-	if len(vals) == 0 {
-		e.buf = append(e.buf, '[', ']')
-		return e
-	}
-	e.buf = append(e.buf, '[')
 	e.appendFloats32(vals)
-	e.buf = append(e.buf, ']')
 	return e
 }
 func (e *encoderText) Float64(k string, v float64) Encoder {
@@ -495,17 +350,7 @@ func (e *encoderText) Floats64(k string, vals []float64) Encoder {
 		return e
 	}
 	e.appendKey(k)
-	if vals == nil {
-		e.buf = append(e.buf, 'n', 'u', 'l', 'l')
-		return e
-	}
-	if len(vals) == 0 {
-		e.buf = append(e.buf, '[', ']')
-		return e
-	}
-	e.buf = append(e.buf, '[')
 	e.appendFloats64(vals)
-	e.buf = append(e.buf, ']')
 	return e
 }
 func (e *encoderText) Type(k string, v any) Encoder {

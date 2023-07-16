@@ -228,7 +228,56 @@ func (e *encoder) appendStringComplex(s string, i int) {
 		e.buf = append(e.buf, s[start:]...)
 	}
 }
+func (e *encoder) appendStrings(vals []string) {
+	if vals == nil {
+		e.buf = append(e.buf, 'n', 'u', 'l', 'l')
+		return
+	}
+	if len(vals) == 0 {
+		e.buf = append(e.buf, '[', ']')
+		return
+	}
+	e.buf = append(e.buf, '[', '"')
+	e.appendString(vals[0])
+	e.buf = append(e.buf, '"')
+	if len(vals) > 1 {
+		for _, val := range vals[1:] {
+			e.buf = append(e.buf, ',', '"')
+			e.appendString(val)
+			e.buf = append(e.buf, '"')
+		}
+	}
+	e.buf = append(e.buf, ']')
+}
+func (e *encoder) appendBools(vals []bool) {
+	if vals == nil {
+		e.buf = append(e.buf, 'n', 'u', 'l', 'l')
+		return
+	}
+	if len(vals) == 0 {
+		e.buf = append(e.buf, '[', ']')
+		return
+	}
+	e.buf = append(e.buf, '[')
+	e.buf = strconv.AppendBool(e.buf, vals[0])
+	if len(vals) > 1 {
+		for _, val := range vals[1:] {
+			e.buf = append(e.buf, ',')
+			e.buf = strconv.AppendBool(e.buf, val)
+		}
+	}
+	e.buf = append(e.buf, ']')
+}
 func (e *encoder) appendInts(vals []int) {
+	if vals == nil {
+		e.buf = append(e.buf, 'n', 'u', 'l', 'l')
+		return
+	}
+	if len(vals) == 0 {
+		e.buf = append(e.buf, '[', ']')
+		return
+	}
+	e.buf = append(e.buf, '[')
 	e.buf = strconv.AppendInt(e.buf, int64(vals[0]), 10)
 	if len(vals) > 1 {
 		for _, val := range vals[1:] {
@@ -236,8 +285,18 @@ func (e *encoder) appendInts(vals []int) {
 			e.buf = strconv.AppendInt(e.buf, int64(val), 10)
 		}
 	}
+	e.buf = append(e.buf, ']')
 }
 func (e *encoder) appendInts8(vals []int8) {
+	if vals == nil {
+		e.buf = append(e.buf, 'n', 'u', 'l', 'l')
+		return
+	}
+	if len(vals) == 0 {
+		e.buf = append(e.buf, '[', ']')
+		return
+	}
+	e.buf = append(e.buf, '[')
 	e.buf = strconv.AppendInt(e.buf, int64(vals[0]), 10)
 	if len(vals) > 1 {
 		for _, val := range vals[1:] {
@@ -245,8 +304,18 @@ func (e *encoder) appendInts8(vals []int8) {
 			e.buf = strconv.AppendInt(e.buf, int64(val), 10)
 		}
 	}
+	e.buf = append(e.buf, ']')
 }
 func (e *encoder) appendInts16(vals []int16) {
+	if vals == nil {
+		e.buf = append(e.buf, 'n', 'u', 'l', 'l')
+		return
+	}
+	if len(vals) == 0 {
+		e.buf = append(e.buf, '[', ']')
+		return
+	}
+	e.buf = append(e.buf, '[')
 	e.buf = strconv.AppendInt(e.buf, int64(vals[0]), 10)
 	if len(vals) > 1 {
 		for _, val := range vals[1:] {
@@ -254,8 +323,18 @@ func (e *encoder) appendInts16(vals []int16) {
 			e.buf = strconv.AppendInt(e.buf, int64(val), 10)
 		}
 	}
+	e.buf = append(e.buf, ']')
 }
 func (e *encoder) appendInts32(vals []int32) {
+	if vals == nil {
+		e.buf = append(e.buf, 'n', 'u', 'l', 'l')
+		return
+	}
+	if len(vals) == 0 {
+		e.buf = append(e.buf, '[', ']')
+		return
+	}
+	e.buf = append(e.buf, '[')
 	e.buf = strconv.AppendInt(e.buf, int64(vals[0]), 10)
 	if len(vals) > 1 {
 		for _, val := range vals[1:] {
@@ -263,8 +342,18 @@ func (e *encoder) appendInts32(vals []int32) {
 			e.buf = strconv.AppendInt(e.buf, int64(val), 10)
 		}
 	}
+	e.buf = append(e.buf, ']')
 }
 func (e *encoder) appendInts64(vals []int64) {
+	if vals == nil {
+		e.buf = append(e.buf, 'n', 'u', 'l', 'l')
+		return
+	}
+	if len(vals) == 0 {
+		e.buf = append(e.buf, '[', ']')
+		return
+	}
+	e.buf = append(e.buf, '[')
 	e.buf = strconv.AppendInt(e.buf, vals[0], 10)
 	if len(vals) > 1 {
 		for _, val := range vals[1:] {
@@ -272,8 +361,18 @@ func (e *encoder) appendInts64(vals []int64) {
 			e.buf = strconv.AppendInt(e.buf, val, 10)
 		}
 	}
+	e.buf = append(e.buf, ']')
 }
 func (e *encoder) appendUints(vals []uint) {
+	if vals == nil {
+		e.buf = append(e.buf, 'n', 'u', 'l', 'l')
+		return
+	}
+	if len(vals) == 0 {
+		e.buf = append(e.buf, '[', ']')
+		return
+	}
+	e.buf = append(e.buf, '[')
 	e.buf = strconv.AppendUint(e.buf, uint64(vals[0]), 10)
 	if len(vals) > 1 {
 		for _, val := range vals[1:] {
@@ -281,8 +380,18 @@ func (e *encoder) appendUints(vals []uint) {
 			e.buf = strconv.AppendUint(e.buf, uint64(val), 10)
 		}
 	}
+	e.buf = append(e.buf, ']')
 }
 func (e *encoder) appendUints8(vals []uint8) {
+	if vals == nil {
+		e.buf = append(e.buf, 'n', 'u', 'l', 'l')
+		return
+	}
+	if len(vals) == 0 {
+		e.buf = append(e.buf, '[', ']')
+		return
+	}
+	e.buf = append(e.buf, '[')
 	e.buf = strconv.AppendUint(e.buf, uint64(vals[0]), 10)
 	if len(vals) > 1 {
 		for _, val := range vals[1:] {
@@ -290,8 +399,18 @@ func (e *encoder) appendUints8(vals []uint8) {
 			e.buf = strconv.AppendUint(e.buf, uint64(val), 10)
 		}
 	}
+	e.buf = append(e.buf, ']')
 }
 func (e *encoder) appendUints16(vals []uint16) {
+	if vals == nil {
+		e.buf = append(e.buf, 'n', 'u', 'l', 'l')
+		return
+	}
+	if len(vals) == 0 {
+		e.buf = append(e.buf, '[', ']')
+		return
+	}
+	e.buf = append(e.buf, '[')
 	e.buf = strconv.AppendUint(e.buf, uint64(vals[0]), 10)
 	if len(vals) > 1 {
 		for _, val := range vals[1:] {
@@ -299,8 +418,18 @@ func (e *encoder) appendUints16(vals []uint16) {
 			e.buf = strconv.AppendUint(e.buf, uint64(val), 10)
 		}
 	}
+	e.buf = append(e.buf, ']')
 }
 func (e *encoder) appendUints32(vals []uint32) {
+	if vals == nil {
+		e.buf = append(e.buf, 'n', 'u', 'l', 'l')
+		return
+	}
+	if len(vals) == 0 {
+		e.buf = append(e.buf, '[', ']')
+		return
+	}
+	e.buf = append(e.buf, '[')
 	e.buf = strconv.AppendUint(e.buf, uint64(vals[0]), 10)
 	if len(vals) > 1 {
 		for _, val := range vals[1:] {
@@ -308,8 +437,18 @@ func (e *encoder) appendUints32(vals []uint32) {
 			e.buf = strconv.AppendUint(e.buf, uint64(val), 10)
 		}
 	}
+	e.buf = append(e.buf, ']')
 }
 func (e *encoder) appendUints64(vals []uint64) {
+	if vals == nil {
+		e.buf = append(e.buf, 'n', 'u', 'l', 'l')
+		return
+	}
+	if len(vals) == 0 {
+		e.buf = append(e.buf, '[', ']')
+		return
+	}
+	e.buf = append(e.buf, '[')
 	e.buf = strconv.AppendUint(e.buf, vals[0], 10)
 	if len(vals) > 1 {
 		for _, val := range vals[1:] {
@@ -317,8 +456,18 @@ func (e *encoder) appendUints64(vals []uint64) {
 			e.buf = strconv.AppendUint(e.buf, val, 10)
 		}
 	}
+	e.buf = append(e.buf, ']')
 }
 func (e *encoder) appendFloats32(vals []float32) {
+	if vals == nil {
+		e.buf = append(e.buf, 'n', 'u', 'l', 'l')
+		return
+	}
+	if len(vals) == 0 {
+		e.buf = append(e.buf, '[', ']')
+		return
+	}
+	e.buf = append(e.buf, '[')
 	e.appendFloat(float64(vals[0]), 32)
 	if len(vals) > 1 {
 		for _, val := range vals[1:] {
@@ -326,8 +475,18 @@ func (e *encoder) appendFloats32(vals []float32) {
 			e.appendFloat(float64(val), 32)
 		}
 	}
+	e.buf = append(e.buf, ']')
 }
 func (e *encoder) appendFloats64(vals []float64) {
+	if vals == nil {
+		e.buf = append(e.buf, 'n', 'u', 'l', 'l')
+		return
+	}
+	if len(vals) == 0 {
+		e.buf = append(e.buf, '[', ']')
+		return
+	}
+	e.buf = append(e.buf, '[')
 	e.appendFloat(vals[0], 64)
 	if len(vals) > 1 {
 		for _, val := range vals[1:] {
@@ -335,6 +494,7 @@ func (e *encoder) appendFloats64(vals []float64) {
 			e.appendFloat(val, 64)
 		}
 	}
+	e.buf = append(e.buf, ']')
 }
 func (e *encoder) appendFloat(v float64, bitSize int) {
 	if math.IsNaN(v) {

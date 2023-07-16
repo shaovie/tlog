@@ -11,7 +11,7 @@ func TestTLog(t *testing.T) {
 	writer := NewWriteToConsole()
 	//writer := NewWriteToFileSeparate(FileStoreMode(AppendOneFile))
 	//writer := NewWriteToFileMixed(FileStoreMode(AppendOneFile))
-	tl := New(OmitEmpty(true), SetWriter(writer), Format(FormatText))
+	tl := New(OmitEmpty(true), TimeFormat(HumanReadableTimeMs), SetWriter(writer), Format(FormatText))
 	s1 := `i'm sorry, "cuisw" is right! ohh.\n`
 	tl.Debug().Fmt("fmt", "n=%d type=%s v=%v %s", 10, reflect.TypeOf(*tl).String(), *tl, s1).Msg("")
 	tl.Debug().Fmt("> ", "n=%d type=%s v=%v %s", 10, reflect.TypeOf(*tl).String(), *tl, s1).Msg("")
