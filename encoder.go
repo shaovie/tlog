@@ -14,6 +14,8 @@ const (
 	UnixTimestampMs     int = 4 // 1689340100123 // millisecond
 )
 
+type AnyMarshalFuncT func(v any) ([]byte, error)
+
 type Encoder interface {
 	// For writer
 	Level() int
@@ -57,6 +59,8 @@ type Encoder interface {
 	Floats64(k string, v []float64) Encoder
 
 	Type(k string, v any) Encoder
+	//
+	Any(k string, v any) Encoder
 
 	Time(k string, t time.Time, format string) Encoder
 
@@ -68,6 +72,7 @@ type Encoder interface {
 
 	// config
 	OmitEmpty(v bool) Encoder
+	AnyMarshalFunc(f AnyMarshalFuncT) Encoder
 
 	// end
 	Msg(s string)
@@ -79,10 +84,14 @@ type encoder struct {
 	level int
 	buf   []byte
 
+	omitEmpty  bool
+	timeFormat int
+
 	now    time.Time
 	writer Writer
 
-	doneCallback func(s string)
+	doneCallback   func(s string)
+	anyMarshalFunc AnyMarshalFuncT
 }
 
 const hex = "0123456789abcdef"

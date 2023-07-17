@@ -10,9 +10,6 @@ import (
 
 type encoderJson struct {
 	encoder
-
-	omitEmpty  bool
-	timeFormat int
 }
 
 func (e *encoderJson) init() {
@@ -37,6 +34,10 @@ func (e *encoderJson) init() {
 }
 func (e *encoderJson) OmitEmpty(v bool) Encoder {
 	e.omitEmpty = v
+	return e
+}
+func (e *encoderJson) AnyMarshalFunc(f AnyMarshalFuncT) Encoder {
+	e.anyMarshalFunc = f
 	return e
 }
 func (e *encoderJson) appendKey(k string) {
@@ -377,6 +378,18 @@ func (e *encoderJson) Type(k string, v any) Encoder {
 		return e.Str(k, "<nil>")
 	}
 	return e.Str(k, reflect.TypeOf(v).String())
+}
+func (e *encoderJson) Any(k string, v any) Encoder {
+	if e == nil {
+		return nil
+	}
+	marshaled, err := e.anyMarshalFunc(v)
+	if err != nil {
+		return e.Str(k, fmt.Sprintf("marshaling error: %s", err.Error()))
+	}
+	e.appendKey(k)
+	e.buf = append(e.buf, marshaled...)
+	return e
 }
 func (e *encoderJson) Time(k string, t time.Time, format string) Encoder {
 	if e == nil {

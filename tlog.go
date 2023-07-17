@@ -19,10 +19,11 @@ const (
 )
 
 type TLog struct {
-	omitEmpty  bool // for json
-	format     int
-	level      int
-	timeFormat int
+	omitEmpty      bool // for json
+	format         int
+	level          int
+	timeFormat     int
+	anyMarshalFunc AnyMarshalFuncT
 
 	encoderTextPool sync.Pool
 	encoderJsonPool sync.Pool
@@ -33,11 +34,12 @@ func New(opts ...Option) *TLog {
 	opt := setOptions(opts...)
 
 	tl := &TLog{
-		omitEmpty:  opt.omitEmpty,
-		format:     opt.format,
-		level:      opt.level,
-		writer:     opt.writer,
-		timeFormat: opt.timeFormat,
+		omitEmpty:      opt.omitEmpty,
+		format:         opt.format,
+		level:          opt.level,
+		writer:         opt.writer,
+		timeFormat:     opt.timeFormat,
+		anyMarshalFunc: opt.anyMarshalFunc,
 		encoderTextPool: sync.Pool{
 			New: func() any {
 				return &encoderText{
@@ -76,6 +78,7 @@ func (tl *TLog) newEncoder(lvl int, doneCallback func(s string)) Encoder {
 		obj.timeFormat = tl.timeFormat
 		obj.writer = tl.writer
 		obj.doneCallback = doneCallback
+		obj.anyMarshalFunc = tl.anyMarshalFunc
 		obj.init()
 		e = obj
 	} else if tl.format == FormatText {
@@ -85,6 +88,7 @@ func (tl *TLog) newEncoder(lvl int, doneCallback func(s string)) Encoder {
 		obj.timeFormat = tl.timeFormat
 		obj.writer = tl.writer
 		obj.doneCallback = doneCallback
+		obj.anyMarshalFunc = tl.anyMarshalFunc
 		obj.init()
 		e = obj
 	}

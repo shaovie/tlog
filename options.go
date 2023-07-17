@@ -1,6 +1,8 @@
 package tlog
 
-import ()
+import (
+	"encoding/json"
+)
 
 type Options struct {
 	// for json/text
@@ -19,6 +21,8 @@ type Options struct {
 	logFilePrefix string
 	fileStoreMode FileStoreModeT
 
+	anyMarshalFunc AnyMarshalFuncT
+
 	// for simple post
 	postUrl string
 }
@@ -27,14 +31,15 @@ type Option func(*Options)
 
 func setOptions(optL ...Option) *Options {
 	opts := &Options{
-		omitEmpty:     true,
-		format:        FormatJson,
-		level:         AllLevel,
-		writer:        NewWriteToConsole(),
-		timeFormat:    HumanReadableTimeMs,
-		logDir:        "logs",
-		logFilePrefix: "tlog",
-		fileStoreMode: DailySplit,
+		omitEmpty:      true,
+		format:         FormatJson,
+		level:          AllLevel,
+		writer:         NewWriteToConsole(),
+		timeFormat:     HumanReadableTimeMs,
+		logDir:         "logs",
+		logFilePrefix:  "tlog",
+		fileStoreMode:  DailySplit,
+		anyMarshalFunc: json.Marshal,
 	}
 
 	for _, opt := range optL {
@@ -105,6 +110,14 @@ func PostUrl(v string) Option {
 	return func(o *Options) {
 		if len(v) > 0 {
 			o.postUrl = v
+		}
+	}
+}
+
+func AnyMarshalFunc(f AnyMarshalFuncT) Option {
+	return func(o *Options) {
+		if f != nil {
+			o.anyMarshalFunc = f
 		}
 	}
 }

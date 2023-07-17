@@ -10,9 +10,6 @@ import (
 
 type encoderText struct {
 	encoder
-
-	omitEmpty  bool
-	timeFormat int
 }
 
 func (e *encoderText) init() {
@@ -36,6 +33,10 @@ func (e *encoderText) init() {
 }
 func (e *encoderText) OmitEmpty(v bool) Encoder {
 	e.omitEmpty = v
+	return e
+}
+func (e *encoderText) AnyMarshalFunc(f AnyMarshalFuncT) Encoder {
+	e.anyMarshalFunc = f
 	return e
 }
 func (e *encoderText) appendKey(k string) {
@@ -361,6 +362,18 @@ func (e *encoderText) Type(k string, v any) Encoder {
 		return e.Str(k, "<nil>")
 	}
 	return e.Str(k, reflect.TypeOf(v).String())
+}
+func (e *encoderText) Any(k string, v any) Encoder {
+	if e == nil {
+		return nil
+	}
+	marshaled, err := e.anyMarshalFunc(v)
+	if err != nil {
+		return e.Str(k, fmt.Sprintf("marshaling error: %s", err.Error()))
+	}
+	e.appendKey(k)
+	e.buf = append(e.buf, marshaled...)
+	return e
 }
 func (e *encoderText) Time(k string, t time.Time, format string) Encoder {
 	if e == nil {

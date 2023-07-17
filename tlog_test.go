@@ -11,7 +11,7 @@ func TestTLog(t *testing.T) {
 	writer := NewWriteToConsole()
 	//writer := NewWriteToFileSeparate(FileStoreMode(AppendOneFile))
 	//writer := NewWriteToFileMixed(FileStoreMode(AppendOneFile))
-	tl := New(OmitEmpty(true), TimeFormat(HumanReadableTimeMs), SetWriter(writer), Format(FormatText))
+	tl := New(OmitEmpty(true), TimeFormat(HumanReadableTimeMs), SetWriter(writer), Format(FormatJson))
 	s1 := `i'm sorry, "cuisw" is right! ohh.\n`
 	tl.Debug().Fmt("fmt", "n=%d type=%s v=%v %s", 10, reflect.TypeOf(*tl).String(), *tl, s1).Msg("")
 	tl.Debug().Fmt("> ", "n=%d type=%s v=%v %s", 10, reflect.TypeOf(*tl).String(), *tl, s1).Msg("")
@@ -66,4 +66,12 @@ func TestTLog(t *testing.T) {
 	}
 	jsdata, _ := json.Marshal(&js{Name: "cuisw", Empty: "", Age: 18})
 	tl.Debug().RawJSON("json", jsdata).Msgf("it's %s end #%d", "oooh", 12)
+	tl.Info().Any("any", &js{Name: "anybody", Empty: "", Age: 21}).Go()
+
+	f1 := func(v any) ([]byte, error) {
+		bf := make([]byte, 0, 16)
+		bf = append(bf, "123"...)
+		return bf, nil
+	}
+	tl.Info().AnyMarshalFunc(f1).Any("anybody2", &js{Name: "anybody", Empty: "", Age: 21}).Go()
 }
