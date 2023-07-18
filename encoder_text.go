@@ -407,22 +407,30 @@ func (e *encoderText) Msg(s string) {
 	if len(s) > 0 {
 		e.Str("msg", s)
 	}
-	e.write()
+    e.Go()
 }
 func (e *encoderText) Msgf(format string, v ...any) {
 	if e == nil {
 		return
 	}
 	e.Fmt("msg", format, v...)
-	e.write()
+	e.Go()
 }
 func (e *encoderText) Go() {
 	if e == nil {
 		return
 	}
-	e.write()
-}
-func (e *encoderText) write() {
 	e.buf = append(e.buf, '\n')
 	e.writer.Write(e, e.buf)
+
+    // Proper usage of a sync.Pool requires each entry to have approximately
+	// the same memory cost. To obtain this property when the stored type
+	// contains a variably-sized buffer, we add a hard limit on the maximum buffer
+	// to place back in the pool.
+	//
+	// See https://golang.org/issue/23199
+	if cap(e.buf) > (1 << 14) { // 16KiB
+		return
+	}
+    e.tl.encoderTextPool.Put(e)
 }

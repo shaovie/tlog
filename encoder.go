@@ -92,6 +92,7 @@ type encoder struct {
 
 	doneCallback   func(s string)
 	anyMarshalFunc AnyMarshalFuncT
+    tl *TLog
 }
 
 const hex = "0123456789abcdef"

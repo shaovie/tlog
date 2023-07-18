@@ -73,6 +73,7 @@ func (tl *TLog) newEncoder(lvl int, doneCallback func(s string)) Encoder {
 	var e Encoder
 	if tl.format == FormatJson {
 		obj := tl.encoderJsonPool.Get().(*encoderJson)
+        obj.tl = tl
 		obj.level = lvl
 		obj.omitEmpty = tl.omitEmpty
 		obj.timeFormat = tl.timeFormat
@@ -83,6 +84,7 @@ func (tl *TLog) newEncoder(lvl int, doneCallback func(s string)) Encoder {
 		e = obj
 	} else if tl.format == FormatText {
 		obj := tl.encoderTextPool.Get().(*encoderText)
+        obj.tl = tl
 		obj.level = lvl
 		obj.omitEmpty = tl.omitEmpty
 		obj.timeFormat = tl.timeFormat
