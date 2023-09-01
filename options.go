@@ -51,27 +51,30 @@ func setOptions(optL ...Option) *Options {
 // If you don't want to output anything, you can use io.Discard
 func SetWriter(w Writer) Option {
 	return func(o *Options) {
-		if w != nil {
-			o.writer = w
+		if w == nil {
+			panic("tlog:SetWriter param is illegal")
 		}
+		o.writer = w
 	}
 }
 
 // Set prefix `time` format
 func TimeFormat(v int) Option {
 	return func(o *Options) {
-		if v > 0 {
-			o.timeFormat = v
+		if v < 1 {
+			panic("tlog:TimeFormat param is illegal")
 		}
+		o.timeFormat = v
 	}
 }
 
 // json/text
 func Format(v int) Option {
 	return func(o *Options) {
-		if v == FormatJson || v == FormatText {
-			o.format = v
+		if v != FormatJson && v != FormatText {
+			panic("tlog:Format param is illegal")
 		}
+		o.format = v
 	}
 }
 
@@ -85,39 +88,44 @@ func OmitEmpty(v bool) Option {
 // for output file
 func LogDir(v string) Option {
 	return func(o *Options) {
-		if len(v) > 0 {
-			o.logDir = v
+		if len(v) == 0 {
+			panic("tlog:LogDir param is illegal")
 		}
+		o.logDir = v
 	}
 }
 func LogFilePrefix(v string) Option {
 	return func(o *Options) {
-		if len(v) > 0 {
-			o.logFilePrefix = v
+		if len(v) == 0 {
+			panic("tlog:LogFilePrefix param is illegal")
 		}
+		o.logFilePrefix = v
 	}
 }
 func FileStoreMode(v FileStoreModeT) Option {
 	return func(o *Options) {
-		if v > 0 {
-			o.fileStoreMode = v
+		if v < 1 {
+			panic("tlog:FileStoreMode param is illegal")
 		}
+		o.fileStoreMode = v
 	}
 }
 
 // for simple post
 func PostUrl(v string) Option {
 	return func(o *Options) {
-		if len(v) > 0 {
-			o.postUrl = v
+		if len(v) == 0 {
+			panic("tlog:PostUrl param is illegal")
 		}
+		o.postUrl = v
 	}
 }
 
 func AnyMarshalFunc(f AnyMarshalFuncT) Option {
 	return func(o *Options) {
-		if f != nil {
-			o.anyMarshalFunc = f
+		if f == nil {
+			panic("tlog:AnyMarshalFuncT param is illegal")
 		}
+		o.anyMarshalFunc = f
 	}
 }
