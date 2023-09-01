@@ -59,6 +59,7 @@ type Encoder interface {
 	Floats64(k string, v []float64) Encoder
 
 	Type(k string, v any) Encoder
+
 	//
 	Any(k string, v any) Encoder
 
